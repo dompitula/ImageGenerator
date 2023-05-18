@@ -1,4 +1,4 @@
-$(function(){
+$(function() {
 
    $(function() {
       $(":file").change(function() {
@@ -21,7 +21,7 @@ $(function(){
 	var getImage = function()
 	{
 		var image = $('#term').val();
-		var number = $('#quantity').val();
+		var number = $('#quantity').val() || 1;
 
 		if (image == '') 
 		{
@@ -29,28 +29,36 @@ $(function(){
 		} 
 		else 
 		{
-
 			$('#image0').html("<h2 class='loading'>Trwa ładowanie obrazów...</h2>");
 
 			$.getJSON(`https://api.unsplash.com/search/photos?lang=pl&page=1&query=${image}&client_id=${clientID}`,
 				function(jsonData) {
-				// console.log(jsonData);
-				// console.log(jsonData.results[0].urls.regular);
-            	// console.log(jsonData.results[1].urls.regular);
+
+					for (let i = 0; i < 5; i++)
+					{
+						$(`#image${i}`).html(`<img id="theImage" src=""/>`);
+					}
 
 					if (jsonData.total > 0) 
 					{
 						console.log(number);
-						for (let i = 0; i <= number; i++)
+						if (number == 1)
 						{
-							$(`#image${i}`).html('<img id="theImage" src=' + jsonData.results[i].urls.regular + ' />');
+							$(`#image0`).html(`<img id="theImage" src=${jsonData.results[0].urls.regular}/>`);
+						}
+						else
+						{
+							for (let i = 0; i < number; i++)
+								{
+									$(`#image${i}`).html(`<img id="theImage" src=${jsonData.results[i].urls.regular}/>`);
+								}
 						}
 					} 
 					else if (jsonData.total == 0)
 					{
 						$.getJSON(`https://api.unsplash.com/search/photos?lang=pl&page=1&query=cat&client_id=${clientID}`, 
 							function(jsonData){
-								$('#image0').html('<h2 class="loading">Nie udało się odnaleźć pasujących obrazów, a może chodziło ci o zdjęcia kota?</h2><img id="theImage" src=' + jsonData.results[0].urls.regular + '/>');
+								$('#image0').html(`<h2 class="loading">Nie udało się odnaleźć pasujących obrazów, a może chodziło ci o zdjęcia kota?</h2><img id="theImage" src=${jsonData.results[0].urls.regular}/>`);
 	                    });                 
 	                }
 			});
